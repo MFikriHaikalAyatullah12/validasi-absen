@@ -3,6 +3,8 @@ import pool from '@/lib/db';
 import { extractToken, verifyToken } from '@/lib/auth';
 import { validateLocation, calculateFinalStatus, isWithinCheckinWindow } from '@/lib/location';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const token = extractToken(request.headers.get('authorization'));

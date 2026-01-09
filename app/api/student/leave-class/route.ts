@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { extractToken, verifyToken } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 // Student leaves their current class
 export async function POST(request: NextRequest) {
   try {

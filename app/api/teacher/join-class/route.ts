@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { extractToken, verifyToken } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 // Get all available classes that teacher hasn't joined yet
 export async function GET(request: NextRequest) {
   try {

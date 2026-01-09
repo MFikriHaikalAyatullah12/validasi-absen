@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { extractToken, verifyToken, hashPassword } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 // Get students in teacher's classes
 export async function GET(request: NextRequest) {
   try {
