@@ -97,13 +97,13 @@ export default function TeacherDashboard() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'HADIR_PENUH':
-        return <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">🟢 Hadir Penuh</span>;
+        return <span className="px-3 py-1.5 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 rounded-full text-xs font-bold border-2 border-green-300 shadow-sm">🟢 Hadir Penuh</span>;
       case 'HADIR_PARSIAL':
-        return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">🟡 Hadir Parsial</span>;
+        return <span className="px-3 py-1.5 bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 rounded-full text-xs font-bold border-2 border-yellow-300 shadow-sm">🟡 Hadir Parsial</span>;
       case 'PERLU_VERIFIKASI':
-        return <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">🔴 Perlu Verifikasi</span>;
+        return <span className="px-3 py-1.5 bg-gradient-to-r from-red-100 to-rose-100 text-red-800 rounded-full text-xs font-bold border-2 border-red-300 shadow-sm">🔴 Perlu Verifikasi</span>;
       default:
-        return <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">- Belum Absen</span>;
+        return <span className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 rounded-full text-xs font-bold border-2 border-gray-300 shadow-sm">⚪ Belum Absen</span>;
     }
   };
 
@@ -116,65 +116,74 @@ export default function TeacherDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 py-4 sm:py-8 px-3 sm:px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 mb-4 sm:mb-6 border-t-4 border-indigo-500">
+          <div className="flex flex-col gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Dashboard Guru</h1>
-              <p className="text-gray-600">{user?.name}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2 flex-wrap">
+                👨‍🏫 Dashboard Guru
+              </h1>
+              <p className="text-lg sm:text-xl text-gray-800 mt-2 font-semibold break-words">{user?.name}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Link
                 href="/teacher/manage"
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                className="w-full sm:w-auto text-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl font-semibold text-sm sm:text-base"
               >
-                Kelola Kelas & Siswa
+                📚 Kelola Kelas & Siswa
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all shadow-lg hover:shadow-xl text-sm sm:text-base"
               >
-                Logout
+                🚪 Logout
               </button>
             </div>
           </div>
 
           {/* Date Selector */}
-          <div className="flex items-center gap-4">
-            <label className="text-sm font-medium text-gray-700">Tanggal:</label>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-3 sm:p-4 rounded-xl border-2 border-blue-200">
+            <label className="text-sm sm:text-base font-semibold text-gray-800 flex items-center gap-2 whitespace-nowrap">
+              <span className="text-xl sm:text-2xl">📅</span> Tanggal:
+            </label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium shadow-sm text-sm sm:text-base"
             />
           </div>
         </div>
 
         {/* Attendance Table */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b-2 border-indigo-200">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <span className="text-2xl">📊</span> Daftar Kehadiran Siswa
+            </h2>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-in</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-out</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Validasi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">No</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Nama Siswa</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Check-in</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Check-out</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Validasi</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Aksi Cepat</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {students.map((student, index) => (
-                  <tr key={student.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm text-gray-900">{index + 1}</td>
+                  <tr key={student.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors">
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">{index + 1}</td>
                     <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                      <div className="text-xs text-gray-500">{student.email}</div>
+                      <div className="text-sm font-bold text-gray-900">{student.name}</div>
+                      <div className="text-xs text-gray-600">{student.email}</div>
                     </td>
                     <td className="px-6 py-4 text-sm">
                       {student.check_in_time ? (
@@ -211,25 +220,28 @@ export default function TeacherDashboard() {
                     </td>
                     <td className="px-6 py-4">
                       {student.attendance_id && !student.teacher_validated && (
-                        <div className="flex gap-1">
+                        <div className="flex gap-2">
                           <button
                             onClick={() => handleQuickValidate(student, 'HADIR_PENUH')}
                             disabled={validatingId === student.attendance_id}
-                            className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
+                            className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                            title="Hadir Penuh"
                           >
                             ✓
                           </button>
                           <button
                             onClick={() => handleQuickValidate(student, 'HADIR_PARSIAL')}
                             disabled={validatingId === student.attendance_id}
-                            className="px-2 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700 disabled:opacity-50"
+                            className="px-3 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-white text-sm font-bold rounded-lg hover:from-yellow-600 hover:to-amber-700 disabled:opacity-50 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                            title="Hadir Parsial"
                           >
                             ~
                           </button>
                           <button
                             onClick={() => handleQuickValidate(student, 'PERLU_VERIFIKASI')}
                             disabled={validatingId === student.attendance_id}
-                            className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 disabled:opacity-50"
+                            className="px-3 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-bold rounded-lg hover:from-red-600 hover:to-rose-700 disabled:opacity-50 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                            title="Perlu Verifikasi"
                           >
                             ✗
                           </button>
@@ -243,27 +255,31 @@ export default function TeacherDashboard() {
           </div>
 
           {students.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              Tidak ada data siswa
+            <div className="text-center py-16">
+              <p className="text-6xl mb-4">📚</p>
+              <p className="text-gray-500 text-lg font-medium">Tidak ada data siswa</p>
+              <p className="text-gray-400 text-sm mt-2">Siswa akan muncul setelah melakukan check-in</p>
             </div>
           )}
         </div>
 
         {/* Legend */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
-          <h3 className="font-semibold text-gray-800 mb-3">Keterangan Aksi Validasi:</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-green-600 text-white rounded">✓</span>
-              <span>Validasi Hadir Penuh</span>
+        <div className="bg-white rounded-2xl shadow-2xl p-6 mt-6 border-l-4 border-indigo-500">
+          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2 text-lg">
+            <span className="text-2xl">ℹ️</span> Panduan Aksi Validasi Cepat
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border-2 border-green-200">
+              <span className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-bold shadow-md">✓</span>
+              <span className="font-semibold text-gray-700">Validasi Hadir Penuh</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-yellow-600 text-white rounded">~</span>
-              <span>Validasi Hadir Parsial</span>
+            <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+              <span className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-lg font-bold shadow-md">~</span>
+              <span className="font-semibold text-gray-700">Validasi Hadir Parsial</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-red-600 text-white rounded">✗</span>
-              <span>Tandai Perlu Verifikasi</span>
+            <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border-2 border-red-200">
+              <span className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg font-bold shadow-md">✗</span>
+              <span className="font-semibold text-gray-700">Tandai Perlu Verifikasi</span>
             </div>
           </div>
         </div>

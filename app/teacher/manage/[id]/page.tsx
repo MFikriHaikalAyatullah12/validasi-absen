@@ -17,6 +17,8 @@ export default function ClassDetailPage() {
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [showAddExistingStudent, setShowAddExistingStudent] = useState(false);
   const [newStudent, setNewStudent] = useState({ name: '', email: '', class_id: classId });
+  const [downloading, setDownloading] = useState(false);
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -172,6 +174,56 @@ export default function ClassDetailPage() {
     }
   };
 
+  const handleDownloadExcel = async () => {
+    setDownloading(true);
+    try {
+      const token = localStorage.getItem('token');
+      let url = `/api/teacher/attendance/download?class_id=${classId}`;
+      
+      if (dateRange.start) {
+        url += `&start_date=${dateRange.start}`;
+      }
+      if (dateRange.end) {
+        url += `&end_date=${dateRange.end}`;
+      }
+
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal mengunduh data');
+      }
+
+      // Get filename from response header
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `Kehadiran_${classInfo.name}.xlsx`;
+      if (contentDisposition) {
+        const matches = /filename="?(.+)"?/i.exec(contentDisposition);
+        if (matches && matches[1]) {
+          filename = matches[1];
+        }
+      }
+
+      // Download file
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+
+      alert('✅ Data kehadiran berhasil diunduh!');
+    } catch (error: any) {
+      alert('❌ ' + error.message);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -237,6 +289,65 @@ export default function ClassDetailPage() {
                 Logout
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Download Section */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl shadow-lg p-6 mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-2xl">📊</span> Download Data Kehadiran
+              </h3>
+              <p className="text-sm text-gray-600 mb-3">
+                Download data kehadiran siswa dalam format Excel (.xlsx)
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Dari Tanggal</label>
+                  <input
+                    type="date"
+                    value={dateRange.start}
+                    onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                    className="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Sampai Tanggal</label>
+                  <input
+                    type="date"
+                    value={dateRange.end}
+                    onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                    className="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                  />
+                </div>
+              </div>
+              {(dateRange.start || dateRange.end) && (
+                <button
+                  onClick={() => setDateRange({ start: '', end: '' })}
+                  className="mt-2 text-xs text-gray-600 hover:text-gray-800 underline"
+                >
+                  Reset Filter
+                </button>
+              )}
+            </div>
+            <button
+              onClick={handleDownloadExcel}
+              disabled={downloading}
+              className="px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-bold whitespace-nowrap flex items-center gap-2"
+            >
+              {downloading ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  Mengunduh...
+                </>
+              ) : (
+                <>
+                  <span className="text-xl">⬇️</span>
+                  Download Excel
+                </>
+              )}
+            </button>
           </div>
         </div>
 

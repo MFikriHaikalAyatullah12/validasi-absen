@@ -1,0 +1,9 @@
+This is a placeholder. In production, replace with actual PNG icons:
+- icon-192.png (192x192 pixels)
+- icon-512.png (512x512 pixels)
+
+You can create these icons using:
+1. Online tools: https://www.favicon-generator.org/
+2. Or design software like Figma, Canva, etc.
+
+For now, the app will work but may show default browser icon.
