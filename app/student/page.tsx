@@ -14,6 +14,38 @@ export default function StudentDashboard() {
   const [showClassList, setShowClassList] = useState(false);
   const [joiningClass, setJoiningClass] = useState(false);
   const [leavingClass, setLeavingClass] = useState(false);
+  const [isCheckoutTime, setIsCheckoutTime] = useState(false);
+  const [currentTime, setCurrentTime] = useState('');
+
+  // Check if current time is within checkout window
+  const checkCheckoutTime = () => {
+    const now = new Date();
+    // Convert to WITA (UTC+8)
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const witaTime = new Date(utcTime + (8 * 3600000));
+    
+    const hours = witaTime.getHours();
+    const minutes = witaTime.getMinutes();
+    const currentMinutes = hours * 60 + minutes;
+    
+    // Checkout time: 14:00 - 15:00
+    const checkoutStart = 14 * 60; // 14:00
+    const checkoutEnd = 15 * 60;   // 15:00
+    
+    const isWithinCheckout = currentMinutes >= checkoutStart && currentMinutes <= checkoutEnd;
+    setIsCheckoutTime(isWithinCheckout);
+    
+    // Update current time display
+    setCurrentTime(witaTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+  };
+
+  useEffect(() => {
+    // Check checkout time every 30 seconds
+    checkCheckoutTime();
+    const timer = setInterval(checkCheckoutTime, 30000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -615,11 +647,11 @@ export default function StudentDashboard() {
 
           <button
             onClick={handleCheckout}
-            disabled={actionLoading || !attendance?.check_in_time || attendance?.check_out_time}
+            disabled={actionLoading || !attendance?.check_in_time || attendance?.check_out_time || !isCheckoutTime}
             className={`${
               attendance?.check_out_time 
                 ? 'bg-gradient-to-r from-gray-300 to-gray-400 cursor-not-allowed' 
-                : attendance?.check_in_time
+                : attendance?.check_in_time && isCheckoutTime
                 ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-xl hover:shadow-2xl active:scale-95'
                 : 'bg-gradient-to-r from-gray-300 to-gray-400 cursor-not-allowed'
             } text-white py-6 sm:py-8 rounded-2xl font-bold text-lg sm:text-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed touch-manipulation`}
@@ -628,7 +660,9 @@ export default function StudentDashboard() {
               <span className="text-3xl sm:text-4xl">{attendance?.check_out_time ? '✅' : '🏁'}</span>
               <span className="text-sm sm:text-base">{attendance?.check_out_time ? 'Sudah Check-out' : 'Check-out Kehadiran'}</span>
               {attendance?.check_in_time && !attendance?.check_out_time && (
-                <span className="text-xs sm:text-sm font-normal opacity-90">Jam 14:00 - 15:00</span>
+                <span className="text-xs sm:text-sm font-normal opacity-90">
+                  {isCheckoutTime ? 'Jam 14:00 - 15:00' : `Belum Jam Checkout (Sekarang: ${currentTime})`}
+                </span>
               )}
             </div>
           </button>
