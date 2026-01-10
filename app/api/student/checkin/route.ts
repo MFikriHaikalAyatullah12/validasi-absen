@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { extractToken, verifyToken } from '@/lib/auth';
-import { validateLocation, calculateFinalStatus, isWithinCheckinWindow, getWITATime, getWITADateString } from '@/lib/location';
+import { validateLocation, calculateFinalStatus, isWithinCheckinWindow, getWITATime, getWITATimeISO, getWITADateString } from '@/lib/location';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Check if within check-in time window (uses WITA)
     const now = getWITATime();
+    const nowISO = getWITATimeISO(); // For database storage with proper timezone
     if (!isWithinCheckinWindow(now, settings)) {
       return NextResponse.json(
         { 
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
           final_status = $3
         WHERE id = $4
         RETURNING *`,
-        [now, validation.status, finalStatus, existing.id]
+        [nowISO, validation.status, finalStatus, existing.id]
       );
       attendance = updateResult.rows[0];
     } else {
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
           (user_id, date, check_in_time, check_in_status, final_status)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING *`,
-        [payload.userId, today, now, validation.status, finalStatus]
+        [payload.userId, today, nowISO, validation.status, finalStatus]
       );
       attendance = insertResult.rows[0];
     }

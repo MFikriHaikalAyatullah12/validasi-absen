@@ -13,6 +13,24 @@ export function getWITATime(): Date {
 }
 
 /**
+ * GET CURRENT TIME IN WITA AS ISO STRING
+ * Returns ISO 8601 format with WITA timezone offset (+08:00)
+ * This ensures correct time display across all clients
+ */
+export function getWITATimeISO(): string {
+  const witaTime = getWITATime();
+  const year = witaTime.getFullYear();
+  const month = String(witaTime.getMonth() + 1).padStart(2, '0');
+  const day = String(witaTime.getDate()).padStart(2, '0');
+  const hours = String(witaTime.getHours()).padStart(2, '0');
+  const minutes = String(witaTime.getMinutes()).padStart(2, '0');
+  const seconds = String(witaTime.getSeconds()).padStart(2, '0');
+  
+  // Return with WITA timezone offset (+08:00)
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+08:00`;
+}
+
+/**
  * GET WITA DATE STRING (YYYY-MM-DD)
  */
 export function getWITADateString(): string {

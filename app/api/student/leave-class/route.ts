@@ -27,6 +27,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Delete all attendance records for this student (fresh start when rejoining)
+    await pool.query(
+      'DELETE FROM attendance WHERE user_id = $1',
+      [payload.userId]
+    );
+
     // Remove student from class
     await pool.query(
       'UPDATE users SET class_id = NULL WHERE id = $1',
@@ -36,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Get updated user data
     const userResult = await pool.query(
       `SELECT 
-        id, name, email, role, class_id,
+        users.id, users.name, users.email, users.role, users.class_id,
         classes.name as class_name,
         classes.grade_level as class_grade_level
       FROM users

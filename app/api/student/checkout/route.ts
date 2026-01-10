@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { extractToken, verifyToken } from '@/lib/auth';
-import { validateLocation, calculateFinalStatus, isWithinCheckoutWindow, getWITATime, getWITADateString } from '@/lib/location';
+import { validateLocation, calculateFinalStatus, isWithinCheckoutWindow, getWITATime, getWITATimeISO, getWITADateString } from '@/lib/location';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Check if within check-out time window (uses WITA)
     const now = getWITATime();
+    const nowISO = getWITATimeISO(); // For database storage with proper timezone
     if (!isWithinCheckoutWindow(now, settings)) {
       return NextResponse.json(
         { 
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
         `INSERT INTO attendance (user_id, date, check_out_time, check_out_status, final_status)
         VALUES ($1, $2, $3, $4, 'PERLU_VERIFIKASI')
         RETURNING *`,
-        [payload.userId, today, now, validation.status]
+        [payload.userId, today, nowISO, validation.status]
       );
       attendance = insertResult.rows[0];
     } else {
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
           final_status = $3
         WHERE id = $4
         RETURNING *`,
-        [now, validation.status, finalStatus, existing.id]
+        [nowISO, validation.status, finalStatus, existing.id]
       );
       attendance = updateResult.rows[0];
     }

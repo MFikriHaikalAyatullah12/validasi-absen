@@ -48,6 +48,12 @@ export async function POST(request: NextRequest) {
       }, { status: 403 });
     }
 
+    // Delete all attendance records for this student (fresh start when rejoining)
+    await pool.query(
+      'DELETE FROM attendance WHERE user_id = $1',
+      [student_id]
+    );
+
     // Remove student from class (set class_id to NULL)
     await pool.query(
       'UPDATE users SET class_id = NULL WHERE id = $1',
