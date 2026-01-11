@@ -23,21 +23,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get school settings
+    // Get school settings for location validation
     const settingsResult = await pool.query('SELECT * FROM school_settings LIMIT 1');
     if (settingsResult.rows.length === 0) {
       return NextResponse.json({ error: 'Pengaturan sekolah belum dikonfigurasi' }, { status: 500 });
     }
     const settings = settingsResult.rows[0];
 
-    // Check if within check-in time window (uses WITA)
+    // Get user's class to check time settings
+    const userClassResult = await pool.query(
+      `SELECT c.checkin_start_time, c.checkin_end_time, c.checkout_start_time, c.checkout_end_time
+       FROM users u
+       JOIN classes c ON u.class_id = c.id
+       WHERE u.id = $1`,
+      [payload.userId]
+    );
+
+    if (userClassResult.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'Anda belum terdaftar di kelas manapun' },
+        { status: 400 }
+      );
+    }
+
+    const classSettings = userClassResult.rows[0];
+
+    // Check if within check-in time window (uses WITA and class times)
     const now = getWITATime();
     const nowISO = getWITATimeISO(); // For database storage with proper timezone
-    if (!isWithinCheckinWindow(now, settings)) {
+    
+    // Use class settings for time validation
+    const timeSettings = {
+      checkin_start_time: classSettings.checkin_start_time,
+      checkin_end_time: classSettings.checkin_end_time,
+      checkout_start_time: classSettings.checkout_start_time,
+      checkout_end_time: classSettings.checkout_end_time
+    };
+    
+    if (!isWithinCheckinWindow(now, timeSettings)) {
       return NextResponse.json(
         { 
           error: 'Check-in hanya dapat dilakukan pada jam yang ditentukan',
-          checkin_time: `${settings.checkin_start_time} - ${settings.checkin_end_time}`
+          checkin_time: `${timeSettings.checkin_start_time} - ${timeSettings.checkin_end_time}`
         },
         { status: 400 }
       );

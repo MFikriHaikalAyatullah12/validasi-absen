@@ -35,19 +35,48 @@ export default function StudentDashboard() {
     const minutes = witaTime.getMinutes();
     const currentMinutes = hours * 60 + minutes;
     
-    // Check-in time: 07:00 - 12:00
-    const checkinStart = 7 * 60;   // 07:00
-    const checkinEnd = 12 * 60;    // 12:00
+    // Use class times if available, otherwise use default times
+    let checkinStart, checkinEnd, checkoutStart, checkoutEnd;
     
-    // Check-out time: 14:00 - 15:00
-    const checkoutStart = 14 * 60; // 14:00
-    const checkoutEnd = 15 * 60;   // 15:00
+    if (user?.class?.checkin_start_time) {
+      const [ch, cm] = user.class.checkin_start_time.split(':');
+      checkinStart = parseInt(ch) * 60 + parseInt(cm);
+    } else {
+      checkinStart = 7 * 60; // default 07:00
+    }
+    
+    if (user?.class?.checkin_end_time) {
+      const [ch, cm] = user.class.checkin_end_time.split(':');
+      checkinEnd = parseInt(ch) * 60 + parseInt(cm);
+    } else {
+      checkinEnd = 12 * 60; // default 12:00
+    }
+    
+    if (user?.class?.checkout_start_time) {
+      const [ch, cm] = user.class.checkout_start_time.split(':');
+      checkoutStart = parseInt(ch) * 60 + parseInt(cm);
+    } else {
+      checkoutStart = 14 * 60; // default 14:00
+    }
+    
+    if (user?.class?.checkout_end_time) {
+      const [ch, cm] = user.class.checkout_end_time.split(':');
+      checkoutEnd = parseInt(ch) * 60 + parseInt(cm);
+    } else {
+      checkoutEnd = 15 * 60; // default 15:00
+    }
     
     const isWithinCheckin = currentMinutes >= checkinStart && currentMinutes <= checkinEnd;
     const isWithinCheckout = currentMinutes >= checkoutStart && currentMinutes <= checkoutEnd;
     
     setIsCheckinTime(isWithinCheckin);
     setIsCheckoutTime(isWithinCheckout);
+    
+    // Update time info display
+    setTimeInfo({
+      checkin: `${user?.class?.checkin_start_time || '07:00'} - ${user?.class?.checkin_end_time || '12:00'}`,
+      checkout: `${user?.class?.checkout_start_time || '14:00'} - ${user?.class?.checkout_end_time || '15:00'}`
+    });
     
     // Update current time display
     setCurrentTime(witaTime.toLocaleTimeString('id-ID', { 
@@ -64,7 +93,7 @@ export default function StudentDashboard() {
     const timer = setInterval(checkTimeWindows, 5000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     // Auto-refresh attendance status every 10 seconds when user has a class
@@ -114,8 +143,17 @@ export default function StudentDashboard() {
       if (data.success) {
         setAttendance(data.attendance);
         if (data.user) {
+          // Always update user data to get latest class times
           setUser(data.user);
           localStorage.setItem('user', JSON.stringify(data.user));
+          
+          // Update time info immediately when user data changes
+          if (data.user.class) {
+            setTimeInfo({
+              checkin: `${data.user.class.checkin_start_time || '07:00'} - ${data.user.class.checkin_end_time || '12:00'}`,
+              checkout: `${data.user.class.checkout_start_time || '14:00'} - ${data.user.class.checkout_end_time || '15:00'}`
+            });
+          }
         }
       }
     } catch (error) {
@@ -687,7 +725,7 @@ export default function StudentDashboard() {
               <span className="text-sm sm:text-base">{attendance?.check_in_time ? 'Sudah Check-in' : 'Check-in Kehadiran'}</span>
               {!attendance?.check_in_time && (
                 <span className="text-xs sm:text-sm font-normal opacity-90">
-                  {isCheckinTime ? 'Jam 07:00 - 12:00 WITA' : `Tutup (${currentTime} WITA)`}
+                  {isCheckinTime ? `Jam ${timeInfo.checkin} WITA` : `Tutup (${currentTime} WITA)`}
                 </span>
               )}
             </div>
@@ -710,7 +748,7 @@ export default function StudentDashboard() {
               {!attendance?.check_out_time && (
                 <span className="text-xs sm:text-sm font-normal opacity-90">
                   {isCheckoutTime 
-                    ? 'Jam 14:00 - 15:00 WITA' 
+                    ? `Jam ${timeInfo.checkout} WITA` 
                     : `Tutup (${currentTime} WITA)`}
                 </span>
               )}
@@ -728,14 +766,14 @@ export default function StudentDashboard() {
                 <p className="flex items-center justify-between gap-2 flex-wrap">
                   <span className="flex items-center gap-2">
                     <span className="font-semibold text-green-700 whitespace-nowrap">🟢 Check-in:</span> 
-                    <span>07:00 - 12:00 WITA</span>
+                    <span>{timeInfo.checkin} WITA</span>
                   </span>
                   {isCheckinTime && <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">AKTIF</span>}
                 </p>
                 <p className="flex items-center justify-between gap-2 flex-wrap">
                   <span className="flex items-center gap-2">
                     <span className="font-semibold text-blue-700 whitespace-nowrap">🔵 Check-out:</span> 
-                    <span>14:00 - 15:00 WITA</span>
+                    <span>{timeInfo.checkout} WITA</span>
                   </span>
                   {isCheckoutTime && <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">AKTIF</span>}
                 </p>

@@ -1,5 +1,13 @@
 import { LocationData, ValidationResult, ValidationStatus, SchoolSettings } from './types';
 
+// Interface for time settings (can be from school_settings or classes table)
+interface TimeSettings {
+  checkin_start_time: string;
+  checkin_end_time: string;
+  checkout_start_time: string;
+  checkout_end_time: string;
+}
+
 /**
  * GET CURRENT TIME IN WITA (Waktu Indonesia Tengah / Central Indonesia Time)
  * WITA is UTC+8
@@ -152,7 +160,7 @@ export function calculateFinalStatus(
  */
 export function isWithinCheckinWindow(
   currentTime: Date,
-  settings: SchoolSettings
+  settings: TimeSettings | SchoolSettings
 ): boolean {
   // Convert to WITA time
   const witaTime = getWITATime();
@@ -172,7 +180,7 @@ export function isWithinCheckinWindow(
  */
 export function isWithinCheckoutWindow(
   currentTime: Date,
-  settings: SchoolSettings
+  settings: TimeSettings | SchoolSettings
 ): boolean {
   // Convert to WITA time
   const witaTime = getWITATime();

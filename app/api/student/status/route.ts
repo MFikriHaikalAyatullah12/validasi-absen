@@ -20,17 +20,29 @@ export async function GET(request: NextRequest) {
         u.id, u.name, u.email, u.role, u.class_id,
         c.name as class_name,
         c.grade_level as class_grade_level,
+        c.checkin_start_time, c.checkin_end_time,
+        c.checkout_start_time, c.checkout_end_time,
         STRING_AGG(DISTINCT t.name, ', ') as teacher_names
       FROM users u
       LEFT JOIN classes c ON u.class_id = c.id
       LEFT JOIN teacher_classes tc ON c.id = tc.class_id
       LEFT JOIN users t ON tc.teacher_id = t.id
       WHERE u.id = $1
-      GROUP BY u.id, u.name, u.email, u.role, u.class_id, c.name, c.grade_level`,
+      GROUP BY u.id, u.name, u.email, u.role, u.class_id, c.name, c.grade_level, c.checkin_start_time, c.checkin_end_time, c.checkout_start_time, c.checkout_end_time`,
       [payload.userId]
     );
 
     const userData = userResult.rows[0];
+    
+    // Helper function to format time from HH:MM:SS to HH:MM
+    const formatTime = (timeStr: string | null) => {
+      if (!timeStr) return null;
+      // If already in HH:MM format, return as is
+      if (timeStr.length === 5) return timeStr;
+      // If in HH:MM:SS format, remove seconds
+      return timeStr.substring(0, 5);
+    };
+    
     const user = {
       id: userData.id,
       name: userData.name,
@@ -40,7 +52,11 @@ export async function GET(request: NextRequest) {
         id: userData.class_id,
         name: userData.class_name,
         grade_level: userData.class_grade_level,
-        teacher_names: userData.teacher_names || 'Belum ada wali kelas'
+        teacher_names: userData.teacher_names || 'Belum ada wali kelas',
+        checkin_start_time: formatTime(userData.checkin_start_time),
+        checkin_end_time: formatTime(userData.checkin_end_time),
+        checkout_start_time: formatTime(userData.checkout_start_time),
+        checkout_end_time: formatTime(userData.checkout_end_time)
       } : null
     };
 

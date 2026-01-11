@@ -11,6 +11,7 @@ export default function TeacherDashboard() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(true);
   const [validatingId, setValidatingId] = useState<number | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,8 +32,22 @@ export default function TeacherDashboard() {
     fetchAttendance(date);
   }, [router, date]);
 
-  const fetchAttendance = async (selectedDate: string) => {
+  // Real-time auto-refresh every 10 seconds
+  useEffect(() => {
+    if (!autoRefresh) return;
+    
+    const refreshInterval = setInterval(() => {
+      fetchAttendance(date, true); // Silent refresh
+    }, 10000); // 10 seconds
+    
+    return () => clearInterval(refreshInterval);
+  }, [date, autoRefresh]);
+
+  const fetchAttendance = async (selectedDate: string, silent: boolean = false) => {
     try {
+      if (!silent) {
+        setLoading(true);
+      }
       const token = localStorage.getItem('token');
       const response = await fetch(`/api/teacher/attendance?date=${selectedDate}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -44,7 +59,9 @@ export default function TeacherDashboard() {
     } catch (error) {
       console.error('Error fetching attendance:', error);
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
@@ -168,7 +185,24 @@ export default function TeacherDashboard() {
               onChange={(e) => setDate(e.target.value)}
               className="w-full sm:w-auto px-3 sm:px-4 py-2 border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium shadow-sm text-sm sm:text-base"
             />
+            <div className="flex items-center gap-2 ml-auto">
+              <button
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`px-3 py-2 rounded-lg text-xs font-medium transition ${
+                  autoRefresh 
+                    ? 'bg-green-100 text-green-800 border-2 border-green-300' 
+                    : 'bg-gray-100 text-gray-600 border-2 border-gray-300'
+                }`}
+              >
+                {autoRefresh ? '🔄 Auto-refresh ON' : '⏸️ Auto-refresh OFF'}
+              </button>
+            </div>
           </div>
+          {autoRefresh && (
+            <div className="mt-2 text-xs text-indigo-600 font-medium flex items-center gap-1">
+              <span className="animate-pulse">🔴</span> Live - Data diperbarui otomatis setiap 10 detik
+            </div>
+          )}
         </div>
 
         {/* Attendance Table */}

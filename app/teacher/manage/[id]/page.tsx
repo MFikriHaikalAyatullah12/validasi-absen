@@ -19,6 +19,14 @@ export default function ClassDetailPage() {
   const [newStudent, setNewStudent] = useState({ name: '', email: '', class_id: classId });
   const [downloading, setDownloading] = useState(false);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [showTimeSettings, setShowTimeSettings] = useState(false);
+  const [classTimes, setClassTimes] = useState({
+    checkin_start_time: '07:00',
+    checkin_end_time: '12:00',
+    checkout_start_time: '14:00',
+    checkout_end_time: '15:00'
+  });
+  const [savingTimes, setSavingTimes] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -50,6 +58,14 @@ export default function ClassDetailPage() {
       if (data.success) {
         const currentClass = data.classes.find((c: any) => c.id.toString() === classId);
         setClassInfo(currentClass);
+        if (currentClass) {
+          setClassTimes({
+            checkin_start_time: currentClass.checkin_start_time || '07:00',
+            checkin_end_time: currentClass.checkin_end_time || '12:00',
+            checkout_start_time: currentClass.checkout_start_time || '14:00',
+            checkout_end_time: currentClass.checkout_end_time || '15:00'
+          });
+        }
       }
     } catch (error) {
       console.error('Error fetching class info:', error);
@@ -230,6 +246,34 @@ export default function ClassDetailPage() {
     router.push('/login');
   };
 
+  const handleSaveClassTimes = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingTimes(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/teacher/classes/${classId}/times`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(classTimes),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('✅ Jam kelas berhasil diperbarui! Siswa di kelas ini akan melihat jam yang baru.');
+        setShowTimeSettings(false);
+        fetchClassInfo();
+      } else {
+        alert('❌ ' + (data.error || 'Gagal memperbarui jam kelas'));
+      }
+    } catch (error) {
+      alert('❌ Terjadi kesalahan saat menyimpan');
+    } finally {
+      setSavingTimes(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -290,6 +334,118 @@ export default function ClassDetailPage() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Class Time Settings */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl shadow-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <span className="text-2xl">⏰</span> Pengaturan Jam Kelas
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Atur jam check-in dan check-out untuk kelas ini. Siswa akan melihat jam sesuai setting kelas.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowTimeSettings(!showTimeSettings)}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium"
+            >
+              {showTimeSettings ? 'Tutup' : 'Atur Jam'}
+            </button>
+          </div>
+
+          {/* Current Times Display */}
+          {!showTimeSettings && classInfo && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="bg-white rounded-lg p-4 border-2 border-green-200">
+                <div className="text-sm font-semibold text-gray-600 mb-1">🟢 Check-in</div>
+                <div className="text-lg font-bold text-gray-800">
+                  {classInfo.checkin_start_time} - {classInfo.checkin_end_time}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
+                <div className="text-sm font-semibold text-gray-600 mb-1">🔵 Check-out</div>
+                <div className="text-lg font-bold text-gray-800">
+                  {classInfo.checkout_start_time} - {classInfo.checkout_end_time}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Time Settings Form */}
+          {showTimeSettings && (
+            <form onSubmit={handleSaveClassTimes} className="mt-4 bg-white rounded-lg p-6 border-2 border-purple-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h4 className="font-bold text-gray-800 flex items-center gap-2">
+                    🟢 Waktu Check-in
+                  </h4>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Jam Mulai</label>
+                    <input
+                      type="time"
+                      value={classTimes.checkin_start_time}
+                      onChange={(e) => setClassTimes({ ...classTimes, checkin_start_time: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Jam Selesai</label>
+                    <input
+                      type="time"
+                      value={classTimes.checkin_end_time}
+                      onChange={(e) => setClassTimes({ ...classTimes, checkin_end_time: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h4 className="font-bold text-gray-800 flex items-center gap-2">
+                    🔵 Waktu Check-out
+                  </h4>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Jam Mulai</label>
+                    <input
+                      type="time"
+                      value={classTimes.checkout_start_time}
+                      onChange={(e) => setClassTimes({ ...classTimes, checkout_start_time: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Jam Selesai</label>
+                    <input
+                      type="time"
+                      value={classTimes.checkout_end_time}
+                      onChange={(e) => setClassTimes({ ...classTimes, checkout_end_time: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowTimeSettings(false)}
+                  className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingTimes}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-bold disabled:opacity-50"
+                >
+                  {savingTimes ? 'Menyimpan...' : '💾 Simpan Jam Kelas'}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
         {/* Download Section */}

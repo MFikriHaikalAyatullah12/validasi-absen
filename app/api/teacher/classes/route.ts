@@ -17,12 +17,14 @@ export async function GET(request: NextRequest) {
     // Get teacher's classes
     const result = await pool.query(
       `SELECT c.id, c.name, c.grade_level,
+              c.checkin_start_time, c.checkin_end_time,
+              c.checkout_start_time, c.checkout_end_time,
               COUNT(DISTINCT u.id) as student_count
        FROM teacher_classes tc
        JOIN classes c ON tc.class_id = c.id
        LEFT JOIN users u ON u.class_id = c.id AND u.role = 'STUDENT'
        WHERE tc.teacher_id = $1
-       GROUP BY c.id, c.name, c.grade_level
+       GROUP BY c.id, c.name, c.grade_level, c.checkin_start_time, c.checkin_end_time, c.checkout_start_time, c.checkout_end_time
        ORDER BY c.grade_level, c.name`,
       [payload.userId]
     );

@@ -19,6 +19,10 @@ export interface Class {
   id: number;
   name: string;
   wali_kelas_id: number | null;
+  checkin_start_time?: string;
+  checkin_end_time?: string;
+  checkout_start_time?: string;
+  checkout_end_time?: string;
   created_at: Date;
   updated_at: Date;
 }
