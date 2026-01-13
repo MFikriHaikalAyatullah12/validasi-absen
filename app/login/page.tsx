@@ -66,7 +66,7 @@ export default function LoginPage() {
           <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
             <span className="text-2xl">📍</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">Chekin-out</h1>
+          <h1 className="text-3xl font-bold text-white">Validasi Absen</h1>
         </div>
         <p className="text-blue-100 text-lg">Student Attendance System</p>
       </div>
@@ -129,7 +129,7 @@ export default function LoginPage() {
           <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
             <span className="text-2xl">📍</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">Chekin-out</h1>
+          <h1 className="text-3xl font-bold text-white">Validasi Absen</h1>
         </div>
         <p className="text-emerald-100 text-lg">Student Attendance System</p>
       </div>
@@ -209,7 +209,7 @@ export default function LoginPage() {
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600'
                   : 'bg-gradient-to-r from-emerald-600 to-teal-600'
               }`}>
-                Chekin-out
+                Validasi Absen
               </h1>
             </div>
           </div>

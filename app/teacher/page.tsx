@@ -218,8 +218,8 @@ export default function TeacherDashboard() {
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">No</th>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Nama Siswa</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Check-in</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Check-out</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Datang</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Pulang</th>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Status</th>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Validasi</th>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Aksi Cepat</th>

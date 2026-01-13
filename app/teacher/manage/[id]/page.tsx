@@ -359,13 +359,13 @@ export default function ClassDetailPage() {
           {!showTimeSettings && classInfo && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="bg-white rounded-lg p-4 border-2 border-green-200">
-                <div className="text-sm font-semibold text-gray-600 mb-1">🟢 Check-in</div>
+                <div className="text-sm font-semibold text-gray-600 mb-1">🟢 Check Datang</div>
                 <div className="text-lg font-bold text-gray-800">
                   {classInfo.checkin_start_time} - {classInfo.checkin_end_time}
                 </div>
               </div>
               <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
-                <div className="text-sm font-semibold text-gray-600 mb-1">🔵 Check-out</div>
+                <div className="text-sm font-semibold text-gray-600 mb-1">🔵 Check Pulang</div>
                 <div className="text-lg font-bold text-gray-800">
                   {classInfo.checkout_start_time} - {classInfo.checkout_end_time}
                 </div>
@@ -379,7 +379,7 @@ export default function ClassDetailPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <h4 className="font-bold text-gray-800 flex items-center gap-2">
-                    🟢 Waktu Check-in
+                    🟢 Waktu Check Datang
                   </h4>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Jam Mulai</label>
@@ -404,7 +404,7 @@ export default function ClassDetailPage() {
                 </div>
                 <div className="space-y-4">
                   <h4 className="font-bold text-gray-800 flex items-center gap-2">
-                    🔵 Waktu Check-out
+                    🔵 Waktu Check Pulang
                   </h4>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Jam Mulai</label>

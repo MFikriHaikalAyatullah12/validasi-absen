@@ -657,7 +657,7 @@ export default function StudentDashboard() {
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 sm:p-5 rounded-xl border-2 border-green-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2">
                     <span className="text-2xl sm:text-3xl">🟢</span>
-                    <span className="text-gray-700 font-semibold text-sm sm:text-base">Check-in</span>
+                    <span className="text-gray-700 font-semibold text-sm sm:text-base">Check Datang</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-gray-800">
                     {attendance.check_in_time
@@ -672,7 +672,7 @@ export default function StudentDashboard() {
                 <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 sm:p-5 rounded-xl border-2 border-blue-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2">
                     <span className="text-2xl sm:text-3xl">🔵</span>
-                    <span className="text-gray-700 font-semibold text-sm sm:text-base">Check-out</span>
+                    <span className="text-gray-700 font-semibold text-sm sm:text-base">Check Pulang</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-gray-800">
                     {attendance.check_out_time
@@ -722,7 +722,7 @@ export default function StudentDashboard() {
           >
             <div className="flex flex-col items-center gap-2">
               <span className="text-3xl sm:text-4xl">{attendance?.check_in_time ? '✅' : '📍'}</span>
-              <span className="text-sm sm:text-base">{attendance?.check_in_time ? 'Sudah Check-in' : 'Check-in Kehadiran'}</span>
+              <span className="text-sm sm:text-base">{attendance?.check_in_time ? 'Sudah Check Datang' : 'Check Datang'}</span>
               {!attendance?.check_in_time && (
                 <span className="text-xs sm:text-sm font-normal opacity-90">
                   {isCheckinTime ? `Jam ${timeInfo.checkin} WITA` : `Tutup (${currentTime} WITA)`}
@@ -744,7 +744,7 @@ export default function StudentDashboard() {
           >
             <div className="flex flex-col items-center gap-2">
               <span className="text-3xl sm:text-4xl">{attendance?.check_out_time ? '✅' : '🏁'}</span>
-              <span className="text-sm sm:text-base">{attendance?.check_out_time ? 'Sudah Check-out' : 'Check-out Kehadiran'}</span>
+              <span className="text-sm sm:text-base">{attendance?.check_out_time ? 'Sudah Check Pulang' : 'Check Pulang'}</span>
               {!attendance?.check_out_time && (
                 <span className="text-xs sm:text-sm font-normal opacity-90">
                   {isCheckoutTime 
@@ -765,14 +765,14 @@ export default function StudentDashboard() {
               <div className="space-y-2 text-xs sm:text-sm text-gray-700">
                 <p className="flex items-center justify-between gap-2 flex-wrap">
                   <span className="flex items-center gap-2">
-                    <span className="font-semibold text-green-700 whitespace-nowrap">🟢 Check-in:</span> 
+                    <span className="font-semibold text-green-700 whitespace-nowrap">🟢 Check Datang:</span> 
                     <span>{timeInfo.checkin} WITA</span>
                   </span>
                   {isCheckinTime && <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">AKTIF</span>}
                 </p>
                 <p className="flex items-center justify-between gap-2 flex-wrap">
                   <span className="flex items-center gap-2">
-                    <span className="font-semibold text-blue-700 whitespace-nowrap">🔵 Check-out:</span> 
+                    <span className="font-semibold text-blue-700 whitespace-nowrap">🔵 Check Pulang:</span> 
                     <span>{timeInfo.checkout} WITA</span>
                   </span>
                   {isCheckoutTime && <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">AKTIF</span>}
